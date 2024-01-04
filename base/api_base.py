@@ -4,6 +4,10 @@ from base.key import APIKey
 import sys, os
 import asyncio
 from datetime import datetime
+try:
+    import obspython as obs
+except ModuleNotFoundError:
+    print("This script is meant to be loaded by OBS only")
 
 class APIbase(APIKey):
     """API Base for signal emitters
@@ -45,6 +49,12 @@ class APIbase(APIKey):
         """Dummy service disconnect"""
         print("No service to disconnect from.")
         return
+
+    def script_properties(self):
+        props = obs.obs_properties_create()
+        obs.obs_properties_add_bool(props, "enable", "Enable API?")
+        return props
+
 
     def register_donate(self,callback):
         """Store callback receiver for donation"""

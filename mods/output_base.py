@@ -1,7 +1,8 @@
 #!/usr/bin/python3
+from base.api_base import APIbase
 
 
-class OUTBase(object):
+class Mod(APIbase):
     """Simple CLI output receiver
     """
 

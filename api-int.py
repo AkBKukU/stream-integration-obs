@@ -19,12 +19,26 @@ except ModuleNotFoundError:
     mods.remove("modsb")
     #sys.exit(1)
 
-
-
-
-
-
+actions=[]
 print("Loaded Mods:")
 print(mods)
-temp = getattr(sys.modules[__name__],mods[mods.index("output_base")]).OUTBase()
-temp.iprint()
+for key, mod in enumerate(mods):
+    actions.append(getattr(sys.modules[__name__],mods[key]).Mod())
+
+
+def script_properties():
+    props = obs.obs_properties_create()
+
+    a=0
+    for action in actions:
+        print("Adding: " + action.name()+str(a))
+        obs.obs_properties_add_group(
+            props,
+            action.name()+str(a),
+            action.name() + " Settings "+str(a),
+            obs.OBS_GROUP_NORMAL,
+            action.script_properties()
+        )
+        obs.obs_properties_add_bool(props, "enable"+str(a), "Enable API?"+action.name())
+        a+=1
+    return props
