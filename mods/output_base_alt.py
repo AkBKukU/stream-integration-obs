@@ -11,6 +11,7 @@ class Mod(APIbase):
     """
 
     def __init__(self):
+        super().__init__()
         self.service_name = "Base Alt"
 
     def receive_donate(self,from_name,amount,message):
@@ -28,7 +29,15 @@ class Mod(APIbase):
 
     def script_properties(self):
         self.props_service = obs.obs_properties_create()
-        self.props_service = self.prop_apikeys(self.props_service)
         obs.obs_properties_add_bool(self.props_service, self.service_name+"enable", "Enable "+self.service_name+" API?")
-        obs.obs_properties_add_bool(self.props_service, self.service_name+"connect", "Connct API?")
+        self.props_service = self.prop_apikeys(self.props_service)
+
+        # Hide/Show API Keys
+        # TODO - This requires a reload of the script and is not proper
+        p=obs.obs_properties_get(self.props_service, self.service_name+"client_id")
+        obs.obs_property_set_visible(p,self.gui_apienable)
+        p=obs.obs_properties_get(self.props_service, self.service_name+"client_secret")
+        obs.obs_property_set_visible(p,self.gui_apienable)
+        p=obs.obs_properties_get(self.props_service, self.service_name+"connect")
+        obs.obs_property_set_visible(p,self.gui_apienable)
         return self.props_service

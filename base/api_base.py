@@ -17,6 +17,7 @@ class APIbase(object):
     def __init__(self,key_path=None,log=False):
         """Init with file path"""
         self.service_name = "Base"
+        self.gui_apienable = False
         self.client_id = None
         self.client_secret = None
         self.callbacks_donate=[]
@@ -52,14 +53,16 @@ class APIbase(object):
     def script_properties(self):
         self.props_service = obs.obs_properties_create()
         obs.obs_properties_add_bool(self.props_service, self.service_name+"enable", "Enable "+self.service_name+" API?")
-        obs.obs_properties_add_bool(self.props_service, self.service_name+"connect", "Connct API?")
         return self.props_service
 
     def prop_apikeys(self,props):
         obs.obs_properties_add_text(props,self.service_name+"client_id", "Client ID",obs.OBS_TEXT_PASSWORD)
         obs.obs_properties_add_text(props,self.service_name+"client_secret", "Client Secret",obs.OBS_TEXT_PASSWORD)
+        obs.obs_properties_add_bool(self.props_service, self.service_name+"connect", "Connect to API?")
         return props
 
+    def script_update(self,settings):
+        self.gui_apienable = obs.obs_data_get_bool(settings, self.service_name+"enable")
 
     def register_donate(self,callback):
         """Store callback receiver for donation"""
