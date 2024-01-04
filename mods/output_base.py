@@ -20,4 +20,4 @@ class Mod(APIbase):
         return
 
     def iprint(self):
-        print("Yep, it works")
+        return "Yep, it works"

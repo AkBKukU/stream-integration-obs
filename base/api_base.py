@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-from base.key import APIKey
 
 import sys, os
 import asyncio
@@ -9,7 +8,7 @@ try:
 except ModuleNotFoundError:
     print("This script is meant to be loaded by OBS only")
 
-class APIbase(APIKey):
+class APIbase(object):
     """API Base for signal emitters
 
     Manages loading API keys, logging, and registering signal recievers
@@ -17,9 +16,9 @@ class APIbase(APIKey):
 
     def __init__(self,key_path=None,log=False):
         """Init with file path"""
-        super().__init__(key_path)
         self.service_name = "Base"
-        self.api = None
+        self.client_id = None
+        self.client_secret = None
         self.callbacks_donate=[]
         self.callbacks_interact=[]
 
@@ -51,8 +50,14 @@ class APIbase(APIKey):
         return
 
     def script_properties(self):
-        props = obs.obs_properties_create()
-        obs.obs_properties_add_bool(props, "enable", "Enable API?")
+        self.props_service = obs.obs_properties_create()
+        obs.obs_properties_add_bool(self.props_service, self.service_name+"enable", "Enable "+self.service_name+" API?")
+        obs.obs_properties_add_bool(self.props_service, self.service_name+"connect", "Connct API?")
+        return self.props_service
+
+    def prop_apikeys(self,props):
+        obs.obs_properties_add_text(props,self.service_name+"client_id", "Client ID",obs.OBS_TEXT_PASSWORD)
+        obs.obs_properties_add_text(props,self.service_name+"client_secret", "Client Secret",obs.OBS_TEXT_PASSWORD)
         return props
 
 
@@ -67,7 +72,6 @@ class APIbase(APIKey):
             callback(from_name,amount,message)
         return
 
-
     def register_interact(self,callback):
         """Store callback receiver for interation"""
         print("register_interact")
@@ -78,4 +82,14 @@ class APIbase(APIKey):
         """Call stored receivers for interaction"""
         for callback in self.callbacks_interact:
             callback(from_name,kind,message)
+        return
+
+    def receive_donate(self,from_name,amount,message):
+        """Output message to CLI for donate"""
+        print(from_name+" gave "+amount+" and said "+message)
+        return
+
+    def receive_interact(self,from_name,kind,message):
+        """Output message to CLI for interaction"""
+        print(from_name+" did "+kind+" and said "+message)
         return

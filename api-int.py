@@ -4,6 +4,7 @@ import sys
 from os.path import dirname, basename, isfile, join
 import glob
 import asyncio
+from pprint import pprint
 
 try:
     import obspython as obs
@@ -28,10 +29,9 @@ for key, mod in enumerate(mods):
 
 def script_properties():
     props = obs.obs_properties_create()
-
     a=0
     for action in actions:
-        print("Adding: " + action.name()+str(a))
+        print("Adding: " + action.name()+str(a)+str(action.iprint()))
         obs.obs_properties_add_group(
             props,
             action.name()+str(a),
@@ -39,6 +39,6 @@ def script_properties():
             obs.OBS_GROUP_NORMAL,
             action.script_properties()
         )
-        obs.obs_properties_add_bool(props, "enable"+str(a), "Enable API?"+action.name())
         a+=1
+
     return props
